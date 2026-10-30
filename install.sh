@@ -28,8 +28,7 @@ fi
 
 if test ! -e ".skip_update"; then
     if test "$ID" = "debian" -o "$ID_LIKE" = "debian" -o "$ID" = "linuxmint"; then
-        apt update
-        apt install -y dkms bash make acpica-tools dmidecode mokutil patch diffutils
+        echo "Debian"
 
     elif test "$ID" = "manjaro" -o "$ID" = "arch" -o "$ID_LIKE" = "arch"; then
         pacman -Syyu
@@ -49,9 +48,8 @@ if test ! -e ".skip_update"; then
 fi
 
 if test "$(mokutil --sb-state | grep "SecureBoot disabled")" != "SecureBoot disabled" -a  -z "$FORCE_INSTALL"; then
-    prerr "SecureBoot enabled!. ACPI patch and dkms driver may not work!"
-    prerr "Force install see \`sudo /bin/sh install.sh --help\`"
-    exit 1
+    prerr "SecureBoot enabled: DKMS modules are signed by the MOK, but the ACPI patch may not load."
+    prerr "Continuing; set FORCE_INSTALL=1 to suppress this warning."
 fi
 
 export PRODUCTION_NAME="$(dmidecode -s baseboard-product-name)-$(dmidecode -s system-product-name|sed 's/ /_/g')"
